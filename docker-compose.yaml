@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/django
+      - static-data:/vol/web
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    # env_file:
+    #   - C:\Users\Mohcen\Desktop\Django_React\backend\.env
+    environment:
+      - DB_HOST=db
+      - DB_NAME=DB_NAME
+      - DB_USER=DB_USER
+      - DB_PASSWORD=DB_PASSWORD
+    depends_on:
+      - db
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # env_file:
+    #   - C:\Users\Mohcen\Desktop\Django_React\backend\.env
+    environment:
+      - POSTGRES_DB=DB_NAME
+      - POSTGRES_USER=DB_USER
+      - POSTGRES_PASSWORD=DB_PASSWORD
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./frontend:/app
+  #   stdin_open: true
+  #   tty: true
+  #   depends_on:
+  #     - backend
+
+volumes:
+  db-data:
+  static-data:

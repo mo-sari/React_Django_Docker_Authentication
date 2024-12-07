@@ -1,0 +1,96 @@
+# General
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+*.pyc
+*.pyo
+*.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+instance/
+*.migrations/ # Ignore generated migrations if not needed
+staticfiles/
+
+# Django
+/media/  # User-uploaded files
+/static/  # Collected static files
+*.secret  # Secret files
+
+# React/Frontend
+node_modules/
+build/
+dist/
+.npm/
+.yarn/
+.pnp.js
+.pnp.data.json
+.cache/
+coverage/
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+*.env.*.local
+
+# React Native (if applicable)
+.expo/
+*.expo/
+
+# Docker
+docker-compose.override.yml
+docker-compose.override.yaml
+*.pid
+*.log
+*.sock
+*.out
+.dockerignore
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains/IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Operating System
+Thumbs.db
+.DS_Store
+.trash/
+
+# Test Coverage Reports
+.coverage
+.coverage.*
+
+# Virtual Environments
+venv/
+env/
+.env/
+.pipenv/
+*.venv
+
+# Package Managers
+pip-log.txt
+pip-delete-this-directory.txt
+yarn-debug.log*
+.yarn-integrity
+package-lock.json
+yarn-error.log
+
+# Git
+.git/
+.gitmodules
+*.lock
+backend/core/__pycache__/settings.cpython-310.pyc
+extra.json
