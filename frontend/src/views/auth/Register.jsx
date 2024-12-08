@@ -55,8 +55,6 @@ function Register() {
     setErrMsg("");
   }, [user, pwd, matchPwd]);
 
-  console.log(user, email, pwd, matchPwd);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

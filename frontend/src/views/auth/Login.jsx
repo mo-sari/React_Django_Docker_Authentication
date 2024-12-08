@@ -4,6 +4,7 @@ import BaseFooter from "../partials/BaseFooter";
 import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
+import { jwtDecode } from "jwt-decode";
 import axios from "../../api/axios";
 import { LOGIN_URL } from "../../constants/urls";
 
@@ -27,7 +28,6 @@ function Login() {
   useEffect(() => {
     setErrMsg("");
   }, [email, pwd]);
-  console.log(email, pwd);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,12 +41,13 @@ function Login() {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-      console.log(response);
       const accessToken = response?.data?.access;
       const refreshToken = response?.data?.refresh;
-      setAuth({ email, pwd, accessToken, refreshToken });
+      const user = jwtDecode(accessToken) ?? null;
+      setAuth({ user, accessToken, refreshToken });
       setEmail("");
       setPwd("");
+      navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
