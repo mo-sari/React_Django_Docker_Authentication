@@ -10,6 +10,7 @@ import "./authentication.css";
 import Layout from "./components/Layout";
 import Missing from "./components/Missing";
 import RequireAuth from "./components/RequireAuth";
+import Admin from "./components/Admin";
 
 import { Home } from "./Home";
 
@@ -23,7 +24,8 @@ function App() {
 
         {/* we want to protect these routes */}
         <Route element={<RequireAuth />}>
-          <Route path="/Home" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
 
         {/* catch all */}

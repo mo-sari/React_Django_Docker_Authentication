@@ -1,5 +1,5 @@
 "User Serializers"
-
+from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer
 from .models import (
     User,
@@ -19,3 +19,7 @@ class ProfileSerializer(UserCreateSerializer):
     class Meta:
         model = Profile
         fields = '__all__'
+
+
+class NameSerializer(serializers.Serializer):
+    name = serializers.CharField()
