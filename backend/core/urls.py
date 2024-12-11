@@ -25,7 +25,7 @@ urlpatterns = [
     # re_path(r'^auth/', include('djoser.urls.jwt')),  # Keep the rest of the JWT endpoints
     # path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(),
     #      name='token_refresh'),
-    # path('users', include('users.urls')),
+    path('users', include('users.urls')),
     path('auth/jwt/create/', CustomTokenCreateView.as_view(),
          name='token_create'),
     path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(),

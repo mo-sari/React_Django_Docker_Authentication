@@ -17,8 +17,8 @@ function Login() {
   const emailRef = useRef();
   const errRef = useRef();
 
-  const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
+  const [email, setEmail] = useState("mohsen.ansari.wtf@gmail.com");
+  const [pwd, setPwd] = useState("aaa???123");
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
@@ -42,12 +42,11 @@ function Login() {
         withCredentials: true,
       });
       const accessToken = response?.data?.access;
-      // TODO... this refresh token must not be added to Auth
-      const refreshToken = response?.data?.refresh;
       const user = jwtDecode(accessToken) ?? null;
-      setAuth({ user, accessToken, refreshToken });
+      setAuth({ user, accessToken });
       setEmail("");
       setPwd("");
+      console.log("login completed");
       navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
