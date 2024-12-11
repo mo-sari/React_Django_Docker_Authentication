@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # packages
     'rest_framework',
     'drf_spectacular',
+    'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
 ]
@@ -178,7 +179,10 @@ DJOSER = {
         'user_create': 'users.serializers.UserSerializer',
         'user': 'users.serializers.UserSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
-    }
+        'token_create': 'djoser.serializers.TokenCreateSerializer',
+        'token_refresh': 'djoser.serializers.TokenRefreshSerializer',
+    },
+    'TOKEN_MODEL': None,
 }
 
 REST_FRAMEWORK = {
@@ -190,13 +194,22 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
+
+    'AUTH_COOKIE': 'refreshToken',  # Name of the refresh token cookie
+    'AUTH_COOKIE_SECURE': True,  # Ensure HTTPS only in production
+    'AUTH_COOKIE_HTTP_ONLY': True,  # Prevent JavaScript access
+    'AUTH_COOKIE_PATH': '/',  # Cookie available for all endpoints
+    'AUTH_COOKIE_SAMESITE': 'Strict',  # Prevent CSRF attacks
 
     'ALGORITHM': 'HS256',
 
@@ -226,3 +239,20 @@ SIMPLE_JWT = {
 
 SITE_ID = 1  # Make sure this matches the correct site in the Sites framework
 DEFAULT_DOMAIN = "http://localhost:3000"
+
+
+# =========================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
