@@ -155,7 +155,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_POST = 587
 EMAIL_HOST_USER = 'mohsen.ansari.bim@gmail.com'
 # this below is the app password
-EMAIL_HOST_PASSWORD = 'xofb dgtk ftyu dcne'
+EMAIL_HOST_PASSWORD = 'vjxg xjst rfwm ltkv'
 EMAIL_USE_TLS = True
 
 DJOSER = {
@@ -239,20 +239,3 @@ SIMPLE_JWT = {
 
 SITE_ID = 1  # Make sure this matches the correct site in the Sites framework
 DEFAULT_DOMAIN = "http://localhost:3000"
-
-
-# =========================
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}

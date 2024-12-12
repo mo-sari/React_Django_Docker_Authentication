@@ -136,6 +136,10 @@ function Login() {
                   >
                     Sign Up
                   </Link>
+                  <div>
+                    <br />
+                    <Link to="/forgot-password/">Forgot your password?</Link>
+                  </div>
                 </span>
               </div>
             </div>

@@ -25,8 +25,10 @@ urlpatterns = [
 
     path('auth/jwt/create/', CustomTokenCreateView.as_view(),
          name='token_create'),
+
     path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(),
          name='token_refresh'),
+
     path('auth/jwt/logout/', LogoutView.as_view(), name='token_logout'),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),

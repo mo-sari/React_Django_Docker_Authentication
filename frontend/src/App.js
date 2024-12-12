@@ -4,7 +4,9 @@ import {
   ForgotPassword,
   Login,
   Logout,
+  AccountActivation,
   Register,
+  PasswordChangeConfirmation,
 } from "./views/auth";
 import {
   Cart,
@@ -32,6 +34,16 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="logout" element={<Logout />} />
+        <Route path="/activate/:uid/:token" element={<AccountActivation />} />
+        <Route path="/forgot-password/" element={<ForgotPassword />} />
+        <Route
+          path="/password/reset/confirm/:uid/:token/"
+          element={<CreateNewPassword />}
+        />
+        <Route
+          path="/password-reset-complete/"
+          element={<PasswordChangeConfirmation />}
+        />
 
         <Route path="/" element={<Home />} />
         <Route path="/course-detail/:slug" element={<CourseDetail />} />
