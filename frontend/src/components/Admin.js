@@ -8,9 +8,6 @@ const Admin = () => {
       <br />
       <Users />
       <br />
-      <div className="flexGrow">
-        <Link to="/home">Home</Link>
-      </div>
     </section>
   );
 };

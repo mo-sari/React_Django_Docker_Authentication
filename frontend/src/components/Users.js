@@ -26,7 +26,6 @@ const Users = () => {
           console.log("Request canceled:", err.message);
           return; // Ignore cancellation errors
         }
-
         // Handle other errors (e.g., 401 Unauthorized)
         if (err?.response?.status === 401) {
           navigate("/login", { state: { from: location }, replace: true });

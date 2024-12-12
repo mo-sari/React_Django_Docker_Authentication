@@ -19,13 +19,10 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'),
          name='api-docs'),
-    # re_path(r'^auth/', include('djoser.urls')),
-    # re_path(r'^auth/jwt/create/$', CustomTokenCreateView.as_view(),
-    #         name='token_create'),  # Override token_create
-    # re_path(r'^auth/', include('djoser.urls.jwt')),  # Keep the rest of the JWT endpoints
-    # path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(),
-    #      name='token_refresh'),
+
     path('users', include('users.urls')),
+    path('api/', include('api.urls')),
+
     path('auth/jwt/create/', CustomTokenCreateView.as_view(),
          name='token_create'),
     path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(),

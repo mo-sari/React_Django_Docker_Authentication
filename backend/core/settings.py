@@ -41,11 +41,13 @@ INSTALLED_APPS = [
 
     'core',
     'users',
+    'api',
 
     # packages
     'rest_framework',
     'drf_spectacular',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'djoser',
 ]
@@ -97,8 +99,6 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD')
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -199,8 +199,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,

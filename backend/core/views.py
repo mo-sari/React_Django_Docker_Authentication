@@ -2,9 +2,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenObtainPairView
 )
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -30,10 +30,12 @@ class CustomTokenRefreshView(TokenRefreshView):
             # Return only the access token in the response
             return Response({"access": access_token})
         except InvalidToken:
-            return Response(
+            response = Response(
                 {"detail": "Invalid refresh token."},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+            response.delete_cookie('refreshToken', path='/')
+            return response
 
 
 # Custom Token Create View
@@ -59,14 +61,22 @@ class CustomTokenCreateView(TokenObtainPairView):
         return response
 
 
-# Custom Logout View (Optional)
-
-
 class LogoutView(APIView):
-    """
-    Provides functionality to clear the refresh token cookie during logout.
-    """
+    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can log out
+
     def post(self, request, *args, **kwargs):
         response = Response(status=status.HTTP_204_NO_CONTENT)
+
+        # Delete the refresh token cookie
         response.delete_cookie('refreshToken', path='/')
+
+        # Blacklist the refresh token if it exists
+        refresh_token = request.COOKIES.get('refreshToken')
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except InvalidToken:
+                pass  # Token might already be invalid or expired
+
         return response
