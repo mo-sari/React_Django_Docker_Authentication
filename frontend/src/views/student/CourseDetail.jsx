@@ -6,6 +6,10 @@ import Header from "./Partials/Header";
 
 import ReactPlayer from "react-player";
 import { FaPlay } from "react-icons/fa";
+import Toast from "../../utils/Toast";
+import { FaEdit } from "react-icons/fa";
+import { CgFolderRemove } from "react-icons/cg";
+import moment from "moment";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -60,10 +64,83 @@ function CourseDetail() {
     }
   };
 
+  const submitReview = async (review) => {
+    const formDate = new FormData();
+    formDate.append("user_id", user?.user_id);
+    formDate.append("course_id", course?.course.id);
+    formDate.append("rating", review.rating);
+    formDate.append("review", review.review);
+
+    try {
+      const res = axiosPrivate.post(`api/student/rate-course/`, formDate);
+      Toast().fire({
+        icon: "success",
+        title: "Review created",
+      });
+      fetchStudentCourseDetail();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeReview = async (review) => {
+    try {
+      const res = await axiosPrivate.delete(
+        `api/student/review-detail/${user?.user_id}/${review.id}/`
+      );
+      Toast().fire({
+        icon: "success",
+        title: "Review deleted",
+      });
+      fetchStudentCourseDetail();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editReview = async (review) => {
+    const formData = new FormData();
+    formData.append("review", review.review);
+    formData.append("rating", review.rating);
+
+    try {
+      const res = axiosPrivate.patch(
+        `api/student/review-detail/${user?.user_id}/${review.id}/`,
+        formData
+      );
+      Toast().fire({
+        icon: "success",
+        title: "Review edited",
+      });
+      fetchStudentCourseDetail();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchStudentCourseDetail();
   }, [enrollment_id]);
 
+  // =========================================================================
+  // Discussion part
+  const [addNewQuestion, setAddNewQuestion] = useState(false);
+  const handleNewQuestionClose = () => setAddNewQuestion(false);
+  const handleNewQuestionOpen = () => setAddNewQuestion(true);
+
+  const [newQuestion, setNewQuestion] = useState({
+    title: "",
+    message: "",
+  });
+  const handleCreateQuestion = (e) => {
+    setNewQuestion({
+      ...newQuestion,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // =========================================================================
+  // video playing part
   const [variantItem, setVariantItem] = useState(null);
 
   const [show, setShow] = useState(false);
@@ -73,22 +150,71 @@ function CourseDetail() {
     setVariantItem(l);
   };
 
-  const [noteShow, setNoteShow] = useState(false);
-  const handleNoteClose = () => setNoteShow(false);
-  const handleNoteShow = () => {
-    setNoteShow(true);
-  };
-
+  // ==========================================================================
+  // conversation part
   const [ConversationShow, setConversationShow] = useState(false);
   const handleConversationClose = () => setConversationShow(false);
   const handleConversationShow = () => {
     setConversationShow(true);
   };
 
+  // ==========================================================================
+  // review part
+  const [isReviewEditMode, setIsReviewEditMode] = useState(false);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [review, setReview] = useState({
+    rating: 1,
+    review: "",
+  });
+
+  const handleReview = (e) => {
+    setReview({
+      ...review,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const reviewCreate = (e) => {
+    setIsReviewEditMode(false);
+    handleCreateReview(e);
+  };
+
+  const reviewUpdate = (oldReview) => {
+    setIsReviewEditMode(true);
+    setReview({
+      rating: oldReview.rating,
+      review: oldReview.review,
+    });
+    setSelectedReviewId(oldReview.id);
+  };
+
+  const reviewRoutine = () => {
+    setReview({
+      rating: 1,
+      review: "",
+    });
+    setIsReviewEditMode(false);
+    setSelectedReviewId(null);
+  };
+
+  const handleCreateReview = (e) => {
+    e.preventDefault();
+
+    submitReview(review);
+    reviewRoutine();
+  };
+
+  const handleUpdateReview = (e) => {
+    e.preventDefault();
+    review.id = selectedReviewId;
+
+    editReview(review);
+    reviewRoutine();
+  };
+
   return (
     <>
       <BaseHeader />
-
       <section className="pt-5 pb-5">
         <div className="container">
           {/* Header Here */}
@@ -131,24 +257,6 @@ function CourseDetail() {
                                 aria-selected="true"
                               >
                                 Course Lectures
-                              </button>
-                            </li>
-                            {/* Tab item */}
-                            <li
-                              className="nav-item me-2 me-sm-4"
-                              role="presentation"
-                            >
-                              <button
-                                className="nav-link mb-2 mb-md-0"
-                                id="course-pills-tab-2"
-                                data-bs-toggle="pill"
-                                data-bs-target="#course-pills-2"
-                                type="button"
-                                role="tab"
-                                aria-controls="course-pills-2"
-                                aria-selected="false"
-                              >
-                                Notes
                               </button>
                             </li>
                             {/* Tab item */}
@@ -304,148 +412,6 @@ function CourseDetail() {
                               </div>
                               {/* Accordion END */}
                             </div>
-
-                            <div
-                              className="tab-pane fade"
-                              id="course-pills-2"
-                              role="tabpanel"
-                              aria-labelledby="course-pills-tab-2"
-                            >
-                              <div className="card">
-                                <div className="card-header border-bottom p-0 pb-3">
-                                  <div className="d-sm-flex justify-content-between align-items-center">
-                                    <h4 className="mb-0 p-3">All Notes</h4>
-                                    {/* Add Note Modal */}
-                                    <button
-                                      type="button"
-                                      className="btn btn-primary me-3"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#exampleModal"
-                                    >
-                                      Add Note <i className="fas fa-pen"></i>
-                                    </button>
-                                    <div
-                                      className="modal fade"
-                                      id="exampleModal"
-                                      tabIndex={-1}
-                                      aria-labelledby="exampleModalLabel"
-                                      aria-hidden="true"
-                                    >
-                                      <div className="modal-dialog modal-dialog-centered">
-                                        <div className="modal-content">
-                                          <div className="modal-header">
-                                            <h5
-                                              className="modal-title"
-                                              id="exampleModalLabel"
-                                            >
-                                              Add New Note{" "}
-                                              <i className="fas fa-pen"></i>
-                                            </h5>
-                                            <button
-                                              type="button"
-                                              className="btn-close"
-                                              data-bs-dismiss="modal"
-                                              aria-label="Close"
-                                            />
-                                          </div>
-                                          <div className="modal-body">
-                                            <form>
-                                              <div className="mb-3">
-                                                <label
-                                                  htmlFor="exampleInputEmail1"
-                                                  className="form-label"
-                                                >
-                                                  Note Title
-                                                </label>
-                                                <input
-                                                  type="text"
-                                                  className="form-control"
-                                                />
-                                              </div>
-                                              <div className="mb-3">
-                                                <label
-                                                  htmlFor="exampleInputPassword1"
-                                                  className="form-label"
-                                                >
-                                                  Note Content
-                                                </label>
-                                                <textarea
-                                                  className="form-control"
-                                                  name=""
-                                                  id=""
-                                                  cols="30"
-                                                  rows="10"
-                                                ></textarea>
-                                              </div>
-                                              <button
-                                                type="button"
-                                                className="btn btn-secondary me-2"
-                                                data-bs-dismiss="modal"
-                                              >
-                                                <i className="fas fa-arrow-left"></i>{" "}
-                                                Close
-                                              </button>
-                                              <button
-                                                type="submit"
-                                                className="btn btn-primary"
-                                              >
-                                                Save Note{" "}
-                                                <i className="fas fa-check-circle"></i>
-                                              </button>
-                                            </form>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="card-body p-0 pt-3">
-                                  {/* Note item start */}
-                                  <div className="row g-4 p-3">
-                                    <div className="col-sm-11 col-xl-11 shadow p-3 m-3 rounded">
-                                      <h5>
-                                        {" "}
-                                        What is Digital Marketing What is
-                                        Digital Marketing
-                                      </h5>
-                                      <p>
-                                        Arranging rapturous did believe him all
-                                        had supported. Supposing so be resolving
-                                        breakfast am or perfectly. It drew a
-                                        hill from me. Valley by oh twenty direct
-                                        me so. Departure defective arranging
-                                        rapturous did believe him all had
-                                        supported. Family months lasted simple
-                                        set nature vulgar him. Picture for
-                                        attempt joy excited ten carried manners
-                                        talking how. Family months lasted simple
-                                        set nature vulgar him. Picture for
-                                        attempt joy excited ten carried manners
-                                        talking how.
-                                      </p>
-                                      {/* Buttons */}
-                                      <div className="hstack gap-3 flex-wrap">
-                                        <a
-                                          onClick={handleNoteShow}
-                                          className="btn btn-success mb-0"
-                                        >
-                                          <i className="bi bi-pencil-square me-2" />{" "}
-                                          Edit
-                                        </a>
-                                        <a
-                                          href="#"
-                                          className="btn btn-danger mb-0"
-                                        >
-                                          <i className="bi bi-trash me-2" />{" "}
-                                          Delete
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <hr />
-                                </div>
-                              </div>
-                            </div>
                             <div
                               className="tab-pane fade"
                               id="course-pills-3"
@@ -477,10 +443,10 @@ function CourseDetail() {
                                     </div>
                                     <div className="col-sm-6 col-lg-3">
                                       <a
-                                        href="#"
+                                        onChange={handleNewQuestionOpen}
                                         className="btn btn-primary mb-0 w-100"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modalCreatePost"
+                                        data-bs-target="#questionModal"
                                       >
                                         Ask Question
                                       </a>
@@ -550,7 +516,10 @@ function CourseDetail() {
                                       <div className="col-12 bg-light-input">
                                         <select
                                           id="inputState2"
+                                          name="rating"
                                           className="form-select js-choice"
+                                          value={review.rating}
+                                          onChange={handleReview}
                                         >
                                           <option value={1}>★☆☆☆☆ (1/5)</option>
                                           <option value={2}>★★☆☆☆ (2/5)</option>
@@ -566,19 +535,129 @@ function CourseDetail() {
                                           id="exampleFormControlTextarea1"
                                           placeholder="Your review"
                                           rows={3}
-                                          defaultValue={""}
+                                          name="review"
+                                          value={review.review}
+                                          onChange={handleReview}
                                         />
                                       </div>
                                       {/* Button */}
                                       <div className="col-12">
-                                        <button
-                                          type="submit"
-                                          className="btn btn-primary mb-0"
-                                        >
-                                          Post Review
-                                        </button>
+                                        {isReviewEditMode ? (
+                                          <button
+                                            type="submit"
+                                            className="btn btn-primary mb-0"
+                                            onClick={handleUpdateReview}
+                                          >
+                                            Edit Review
+                                          </button>
+                                        ) : (
+                                          <button
+                                            type="submit"
+                                            className="btn btn-primary mb-0"
+                                            onClick={reviewCreate}
+                                          >
+                                            Post Review
+                                          </button>
+                                        )}
                                       </div>
                                     </form>
+                                    {/* {studentReview.map((r) => {
+                                      return <h6>{r.review}</h6>;
+                                    })} */}
+                                    {/* Start Of The Review */}
+                                    <div className="container text-body">
+                                      <div className="row d-flex justify-content-center">
+                                        {studentReview.map((r) => {
+                                          return (
+                                            <div className="d-flex flex-start mb-4">
+                                              <img
+                                                className="rounded-circle shadow-1-strong me-3"
+                                                src={r?.profile?.image}
+                                                alt="avatar"
+                                                width="65"
+                                                height="65"
+                                              />
+                                              <div className="card flex-grow-1">
+                                                <div className="card-body p-4">
+                                                  <div className="">
+                                                    <h5>
+                                                      {r?.user.name}
+                                                      <span
+                                                        style={{
+                                                          color: "gold",
+                                                        }}
+                                                      >
+                                                        <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          viewBox="0 0 1792 1792"
+                                                          width="15"
+                                                          height="15"
+                                                          style={{
+                                                            marginLeft: "10px",
+                                                            marginRight: "5px",
+                                                          }}
+                                                        >
+                                                          <path
+                                                            fill="currentColor"
+                                                            d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z"
+                                                          ></path>
+                                                        </svg>
+                                                        {r.rating}
+                                                      </span>
+                                                    </h5>
+
+                                                    <p className="small">
+                                                      {moment(r.date).format(
+                                                        "DD MMM, YYYY"
+                                                      )}
+                                                    </p>
+                                                    <p className="mb-0">
+                                                      {r.review}
+                                                    </p>
+
+                                                    <div
+                                                      style={{
+                                                        display: "flex",
+                                                        justifyContent: "end",
+                                                      }}
+                                                    >
+                                                      <div></div>{" "}
+                                                      {/* Empty space for spacing */}
+                                                      <div>
+                                                        <CgFolderRemove
+                                                          style={{
+                                                            marginRight: "10px",
+                                                            width: "30px",
+                                                            height: "30px",
+                                                            color: "grey",
+                                                          }}
+                                                          onClick={() =>
+                                                            removeReview(r)
+                                                          }
+                                                        />
+
+                                                        <FaEdit
+                                                          style={{
+                                                            width: "30px",
+                                                            height: "30px",
+                                                            color: "grey",
+                                                          }}
+                                                          onClick={() =>
+                                                            reviewUpdate(r)
+                                                          }
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+
+                                    {/* End Of The Reviews */}
                                   </div>
                                 </div>
                               </div>
@@ -616,32 +695,38 @@ function CourseDetail() {
         </Modal.Footer>
       </Modal>
 
-      {/* Note Edit Modal */}
-      <Modal show={noteShow} size="lg" onHide={handleNoteClose}>
+      {/* Question Modal */}
+      <Modal
+        id="questionModal"
+        show={addNewQuestion}
+        size="lg"
+        onHide={handleNewQuestionClose}
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Note: Note Title</Modal.Title>
+          <Modal.Title>Ask Question</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form>
             <div className="mb-3">
               <label htmlFor="exampleInputEmail1" className="form-label">
-                Note Title
+                Question Title
               </label>
               <input
-                defaultValue={null}
+                value={newQuestion.title}
                 name="title"
+                onChange={handleCreateQuestion}
                 type="text"
                 className="form-control"
               />
             </div>
             <div className="mb-3">
               <label htmlFor="exampleInputPassword1" className="form-label">
-                Note Content
+                Question Message
               </label>
               <textarea
-                onChange={null}
-                defaultValue={null}
-                name="note"
+                value={newQuestion.message}
+                name="message"
+                onChange={handleCreateQuestion}
                 className="form-control"
                 cols="30"
                 rows="10"
@@ -650,18 +735,18 @@ function CourseDetail() {
             <button
               type="button"
               className="btn btn-secondary me-2"
-              onClick={null}
+              onClick={handleNewQuestionClose}
             >
               <i className="fas fa-arrow-left"></i> Close
             </button>
             <button type="submit" className="btn btn-primary">
-              Save Note <i className="fas fa-check-circle"></i>
+              Send Message <i className="fas fa-check-circle"></i>
             </button>
           </form>
         </Modal.Body>
       </Modal>
 
-      {/* Note Edit Modal */}
+      {/* Conversation Edit Modal */}
       <Modal show={ConversationShow} size="lg" onHide={handleConversationClose}>
         <Modal.Header closeButton>
           <Modal.Title>Lesson: 123</Modal.Title>
@@ -854,20 +939,20 @@ function CourseDetail() {
               </li>
             </ul>
 
-            <form class="w-100 d-flex">
+            <form className="w-100 d-flex">
               <textarea
                 name="message"
-                class="one form-control pe-4 bg-light w-75"
+                className="one form-control pe-4 bg-light w-75"
                 id="autoheighttextarea"
                 rows="2"
                 placeholder="What's your question?"
               ></textarea>
-              <button class="btn btn-primary ms-2 mb-0 w-25" type="button">
+              <button className="btn btn-primary ms-2 mb-0 w-25" type="button">
                 Post <i className="fas fa-paper-plane"></i>
               </button>
             </form>
 
-            <form class="w-100">
+            <form className="w-100">
               <input
                 name="title"
                 type="text"
@@ -876,19 +961,18 @@ function CourseDetail() {
               />
               <textarea
                 name="message"
-                class="one form-control pe-4 mb-2 bg-light"
+                className="one form-control pe-4 mb-2 bg-light"
                 id="autoheighttextarea"
                 rows="5"
                 placeholder="What's your question?"
               ></textarea>
-              <button class="btn btn-primary mb-0 w-25" type="button">
+              <button className="btn btn-primary mb-0 w-25" type="button">
                 Post <i className="fas fa-paper-plane"></i>
               </button>
             </form>
           </div>
         </Modal.Body>
       </Modal>
-
       <BaseFooter />
     </>
   );
