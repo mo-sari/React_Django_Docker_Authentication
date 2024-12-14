@@ -156,17 +156,10 @@ function BaseHeader() {
                 </ul>
               </li>
             </ul>
-            <form className="d-flex" role="search">
-              <input
-                className="form-control me-2 w-100"
-                type="search"
-                placeholder="Search Courses"
-                aria-label="Search Courses"
-              />
-              <button className="btn btn-outline-success w-50" type="submit">
-                Search <i className="fas fa-search"></i>
-              </button>
-            </form>
+
+            <Link className="btn btn-outline-success " to="/search/">
+              Search <i className="fas fa-search"></i>
+            </Link>
             {!auth?.user ? (
               <>
                 <Link

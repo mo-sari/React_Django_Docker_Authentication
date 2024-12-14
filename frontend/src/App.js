@@ -39,6 +39,7 @@ function App() {
 
         <Route path="/" element={<Home />} />
         <Route path="/course-detail/:slug" element={<CourseDetail />} />
+        <Route path="/search/" element={<Search />} />
 
         {/* we want to protect these routes */}
         <Route element={<PersistLogin />}>
@@ -46,7 +47,7 @@ function App() {
             {/* Cart Routes */}
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/cart/" element={<Cart />} />
-            <Route path="/checkout/" element={<Checkout />} />
+            <Route path="/checkout/:order_oid/" element={<Checkout />} />
           </Route>
 
           {/* catch all */}

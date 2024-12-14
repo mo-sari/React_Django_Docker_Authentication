@@ -1,9 +1,56 @@
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
+import { axiosPrivate } from "../../api/axios";
+import Toast from "../../utils/Toast";
 
 function Checkout() {
+  const [order, setOrder] = useState([]);
+  const [coupon, setCoupon] = useState("");
+
+  const { order_oid } = useParams();
+  const navigate = useNavigate();
+
+  const fetchOrder = async () => {
+    try {
+      axiosPrivate.get(`api/order/checkout/${order_oid}/`).then((res) => {
+        setOrder(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const applyCoupon = async () => {
+    const formdata = new FormData();
+    formdata.append("order_oid", order?.oid);
+    formdata.append("coupon_code", coupon);
+
+    try {
+      await axiosPrivate.post(`api/order/coupon/`, formdata).then((res) => {
+        console.log(res.data);
+        fetchOrder();
+        Toast().fire({
+          icon: res.data.icon,
+          title: res.data.message,
+        });
+      });
+    } catch (error) {
+      if (error.response.data.includes("Coupon matching query does not exi")) {
+        Toast().fire({
+          icon: "error",
+          title: "Coupon does not exist",
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchOrder();
+  }, [order_oid, fetchOrder]);
+
   return (
     <>
       <BaseHeader />
@@ -76,95 +123,37 @@ function Checkout() {
                 <div className="table-responsive border-0 rounded-3">
                   <table className="table align-middle p-4 mb-0">
                     <tbody className="border-top-2">
-                      <tr>
-                        <td>
-                          <div className="d-lg-flex align-items-center">
-                            <div className="w-100px w-md-80px mb-2 mb-md-0">
-                              <img
-                                src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg"
-                                style={{
-                                  width: "100px",
-                                  height: "70px",
-                                  objectFit: "cover",
-                                }}
-                                className="rounded"
-                                alt=""
-                              />
+                      {order?.order_items?.map((o, index) => (
+                        <tr key={index}>
+                          <td>
+                            <div className="d-lg-flex align-items-center">
+                              <div className="w-100px w-md-80px mb-2 mb-md-0">
+                                <img
+                                  src={o.course.image}
+                                  style={{
+                                    width: "100px",
+                                    height: "70px",
+                                    objectFit: "cover",
+                                  }}
+                                  className="rounded"
+                                  alt=""
+                                />
+                              </div>
+                              <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
+                                <a
+                                  href="#"
+                                  className="text-decoration-none text-dark"
+                                >
+                                  {o.course.title}
+                                </a>
+                              </h6>
                             </div>
-                            <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                              <a
-                                href="#"
-                                className="text-decoration-none text-dark"
-                              >
-                                Building Scalable APIs with GraphQL
-                              </a>
-                            </h6>
-                          </div>
-                        </td>
-                        <td className="text-center">
-                          <h5 className="text-success mb-0">$350</h5>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td>
-                          <div className="d-lg-flex align-items-center">
-                            <div className="w-100px w-md-80px mb-2 mb-md-0">
-                              <img
-                                src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg"
-                                style={{
-                                  width: "100px",
-                                  height: "70px",
-                                  objectFit: "cover",
-                                }}
-                                className="rounded"
-                                alt=""
-                              />
-                            </div>
-                            <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                              <a
-                                href="#"
-                                className="text-decoration-none text-dark"
-                              >
-                                Building Scalable APIs with GraphQL
-                              </a>
-                            </h6>
-                          </div>
-                        </td>
-                        <td className="text-center">
-                          <h5 className="text-success mb-0">$350</h5>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td>
-                          <div className="d-lg-flex align-items-center">
-                            <div className="w-100px w-md-80px mb-2 mb-md-0">
-                              <img
-                                src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg"
-                                style={{
-                                  width: "100px",
-                                  height: "70px",
-                                  objectFit: "cover",
-                                }}
-                                className="rounded"
-                                alt=""
-                              />
-                            </div>
-                            <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                              <a
-                                href="#"
-                                className="text-decoration-none text-dark"
-                              >
-                                Building Scalable APIs with GraphQL
-                              </a>
-                            </h6>
-                          </div>
-                        </td>
-                        <td className="text-center">
-                          <h5 className="text-success mb-0">$350</h5>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="text-center">
+                            <h5 className="text-success mb-0">${o.price}</h5>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -185,6 +174,8 @@ function Checkout() {
                       className="form-control"
                       id="yourName"
                       placeholder="Name"
+                      readOnly
+                      value={order.full_name}
                     />
                   </div>
                   <div className="col-md-6 bg-light-input">
@@ -196,17 +187,8 @@ function Checkout() {
                       className="form-control"
                       id="emailInput"
                       placeholder="Email"
-                    />
-                  </div>
-                  <div className="col-md-6 bg-light-input">
-                    <label htmlFor="mobileNumber" className="form-label">
-                      Mobile number *
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="mobileNumber"
-                      placeholder="Mobile number"
+                      readOnly
+                      value={order.email}
                     />
                   </div>
                   {/* Country option */}
@@ -219,6 +201,8 @@ function Checkout() {
                       className="form-control"
                       id="mobileNumber"
                       placeholder="Country"
+                      readOnly
+                      value={order.country}
                     />
                   </div>
                 </form>
@@ -238,137 +222,39 @@ function Checkout() {
                     </div>
 
                     {/* Course item START */}
-                    <div className="row g-2 shadow p-2 mb-4 rounded-3">
-                      <div className="col-sm-4">
-                        <img
-                          src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg"
-                          className="rounded"
-                          style={{
-                            width: "100px",
-                            height: "70px",
-                            objectFit: "cover",
-                          }}
-                          alt=""
-                        />
-                      </div>
-                      <div className="col-sm-8">
-                        <h6 className="mb-0">
-                          <a
-                            href="#"
-                            className="text-decoration-none text-dark"
-                          >
-                            Building Scalable APIs with GraphQL
-                          </a>
-                        </h6>
-                        <div className="d-flex justify-content-between align-items-center mt-3">
-                          <span className="text-success fw-bold">$150</span>
-                          <div className="text-primary-hover">
-                            <Link to="/cart/" className="text-body me-2">
-                              <i className="bi bi-pencil-square me-1" />
-                              Edit
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Course item START */}
-                    <div className="row g-2 shadow p-2 mb-4 rounded-3">
-                      <div className="col-sm-4">
-                        <img
-                          src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg"
-                          className="rounded"
-                          style={{
-                            width: "100px",
-                            height: "70px",
-                            objectFit: "cover",
-                          }}
-                          alt=""
-                        />
-                      </div>
-                      <div className="col-sm-8">
-                        <h6 className="mb-0">
-                          <a
-                            href="#"
-                            className="text-decoration-none text-dark"
-                          >
-                            Building Scalable APIs with GraphQL
-                          </a>
-                        </h6>
-                        <div className="d-flex justify-content-between align-items-center mt-3">
-                          <span className="text-success fw-bold">$150</span>
-                          <div className="text-primary-hover">
-                            <Link to="/cart/" className="text-body me-2">
-                              <i className="bi bi-pencil-square me-1" />
-                              Edit
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Course item START */}
-                    <div className="row g-2 shadow p-2 mb-4 rounded-3">
-                      <div className="col-sm-4">
-                        <img
-                          src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg"
-                          className="rounded"
-                          style={{
-                            width: "100px",
-                            height: "70px",
-                            objectFit: "cover",
-                          }}
-                          alt=""
-                        />
-                      </div>
-                      <div className="col-sm-8">
-                        <h6 className="mb-0">
-                          <a
-                            href="#"
-                            className="text-decoration-none text-dark"
-                          >
-                            Building Scalable APIs with GraphQL
-                          </a>
-                        </h6>
-                        <div className="d-flex justify-content-between align-items-center mt-3">
-                          <span className="text-success fw-bold">$150</span>
-                          <div className="text-primary-hover">
-                            <Link to="/cart/" className="text-body me-2">
-                              <i className="bi bi-pencil-square me-1" />
-                              Edit
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                     <div className="input-group mt-5">
                       <input
                         className="form-control form-control"
                         placeholder="COUPON CODE"
+                        onChange={(e) => setCoupon(e.target.value)}
                       />
-                      <button type="button" className="btn btn-primary">
+                      <button
+                        onClick={applyCoupon}
+                        type="button"
+                        className="btn btn-primary"
+                      >
                         Apply
                       </button>
                     </div>
 
                     <div className="p-3 shadow rounded-3 mt-3">
                       <h4 className="mb-3">Cart Total</h4>
-                      <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <ul className="list-group mb-3">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
                           Sub Total
-                          <span>$10.99</span>
+                          <span>${order.sub_total}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
                           Discount
-                          <span>$2.99</span>
+                          <span>${order.saved}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
                           Tax
-                          <span>$0.99</span>
+                          <span>${order.tax_fee}</span>
                         </li>
-                        <li class="list-group-item d-flex fw-bold justify-content-between align-items-center">
+                        <li className="list-group-item d-flex fw-bold justify-content-between align-items-center">
                           Total
-                          <span className="fw-bold">$8.99</span>
+                          <span className="fw-bold">${order.total}</span>
                         </li>
                       </ul>
                       <div className="d-grid">

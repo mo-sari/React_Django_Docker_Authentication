@@ -47,7 +47,7 @@ function Cart() {
 
     try {
       const res = await axiosPrivate.post(`api/order/create-order/`, formdata);
-      navigate(`/checkout/${res.data.order_oid}`);
+      navigate(`/checkout/${res.data.order_oid}/`);
     } catch (error) {
       console.log(error);
     }
@@ -231,9 +231,9 @@ function Cart() {
                     </li>
                   </ul>
                   <div className="d-grid">
-                    <Link to={`/checkout/`} className="btn btn-lg btn-success">
+                    <button type="submit" className="btn btn-lg btn-success">
                       Proceed to Checkout
-                    </Link>
+                    </button>
                   </div>
                   <p className="small mb-0 mt-2 text-center">
                     By proceeding to checkout, you agree to these{" "}
