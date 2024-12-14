@@ -286,7 +286,10 @@ function CourseDetail() {
                                       {/* Course lecture */}
                                       {c.variant_items?.map((l, index) => (
                                         <>
-                                          <div className="d-flex justify-content-between align-items-center">
+                                          <div
+                                            key={l.variant_item_id}
+                                            className="d-flex justify-content-between align-items-center"
+                                          >
                                             <div className="position-relative d-flex align-items-center">
                                               <a
                                                 href="#"

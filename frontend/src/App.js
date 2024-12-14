@@ -48,6 +48,11 @@ function App() {
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/cart/" element={<Cart />} />
             <Route path="/checkout/:order_oid/" element={<Checkout />} />
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route
+              path="/student/courses/:enrollment_id"
+              element={<StudentCoruseDetail />}
+            />
           </Route>
 
           {/* catch all */}
