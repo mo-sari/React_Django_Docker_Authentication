@@ -3,7 +3,7 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthProvider";
+import { useAuthContext } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import axios from "../../api/axios";
 import { LOGIN_URL } from "../../constants/urls";
@@ -18,7 +18,7 @@ function Login() {
   const errRef = useRef();
 
   const [email, setEmail] = useState("mohsen.ansari.wtf@gmail.com");
-  const [pwd, setPwd] = useState("aaa???123");
+  const [pwd, setPwd] = useState("aaa???123A");
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {

@@ -8,10 +8,16 @@ import GetCurrentAddress from "../../utils/UserCountry";
 import axios from "../../api/axios";
 // import UserData from "../../utils/UserData";
 import { FaCartShopping } from "react-icons/fa6";
-import { useAuthContext } from "../../context/AuthProvider";
+import { useAuthContext } from "../../context/AuthContext";
+import CartId from "../../utils/CartId";
+import { useCartContext } from "../../context/CartContext";
 
 function Index() {
-  const { auth } = useAuthContext();
+  const {
+    auth: { user },
+  } = useAuthContext();
+
+  const { addToCart } = useCartContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -235,17 +241,19 @@ function Index() {
                               <button
                                 type="button"
                                 className="text-inherit text-decoration-none btn btn-primary me-2"
-                                // onClick={() =>
-                                //   addToCart(
-                                //     c?.id,
-                                //     userId,
-                                //     c?.price,
-                                //     country,
-                                //     CartId()
-                                //   )
-                                // }
+                                onClick={() =>
+                                  addToCart(
+                                    c?.id,
+                                    user?.user_id,
+                                    c?.price,
+                                    country,
+                                    CartId()
+                                  )
+                                }
                               >
-                                <FaCartShopping />
+                                <FaCartShopping
+                                  style={{ width: "30px", height: "30px" }}
+                                />
                               </button>
                               <Link
                                 to={""}

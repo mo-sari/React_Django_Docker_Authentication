@@ -10,12 +10,12 @@ class VariantAdminHelper(admin.ModelAdmin):
 
 
 class CartAdminHelper(admin.ModelAdmin):
-    list_display = ['get_course_name', 'get_user_name']
+    list_display = ['course_name', 'user_name', 'id']
 
-    def get_user_name(self, obj):
+    def user_name(self, obj):
         return obj.user.name
 
-    def get_course_name(self, obj):
+    def course_name(self, obj):
         return obj.course.title
 
 

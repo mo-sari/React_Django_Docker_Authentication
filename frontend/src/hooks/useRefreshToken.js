@@ -1,5 +1,5 @@
 import axios from "../api/axios";
-import { useAuthContext } from "../context/AuthProvider";
+import { useAuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 const useRefreshToken = () => {
   const { setAuth } = useAuthContext();

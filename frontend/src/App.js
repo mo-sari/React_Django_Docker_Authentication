@@ -8,20 +8,12 @@ import {
   Register,
   PasswordChangeConfirmation,
 } from "./views/auth";
-import {
-  Cart,
-  Checkout,
-  Home,
-  Search,
-  CourseDetail,
-  Success,
-} from "./views/base";
+import { Cart, Checkout, Home, Search, CourseDetail } from "./views/base";
 import "./authentication.css";
 import Layout from "./components/Layout";
 import Missing from "./components/Missing";
 import RequireAuth from "./components/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
-import Admin from "./components/Admin";
 import { StudentCoruseDetail, StudentDashboard } from "./views/student";
 
 function App() {
@@ -51,8 +43,10 @@ function App() {
         {/* we want to protect these routes */}
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth />}>
+            {/* Cart Routes */}
             <Route path="/student/dashboard" element={<StudentDashboard />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/cart/" element={<Cart />} />
+            <Route path="/checkout/" element={<Checkout />} />
           </Route>
 
           {/* catch all */}

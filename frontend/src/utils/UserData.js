@@ -1,16 +1,16 @@
-// import { jwtDecode } from "jwt-decode";
-// import { useAuthContext } from "../context/AuthProvider";
+import { jwtDecode } from "jwt-decode";
+import { useAuthContext } from "../context/AuthContext";
 
-// function UserData() {
-//   const { auth } = useAuthContext();
+function UserData() {
+  const { auth } = useAuthContext();
 
-//   if (auth.accessToken) {
-//     const decoded = jwtDecode(auth.accessToken);
+  if (auth.accessToken) {
+    const decoded = jwtDecode(auth.accessToken);
 
-//     return decoded;
-//   } else {
-//     console.log("there was a problem with tokens probably");
-//   }
-// }
+    return decoded;
+  } else {
+    console.log("there was a problem with tokens probably");
+  }
+}
 
-// export default UserData;
+export default UserData;

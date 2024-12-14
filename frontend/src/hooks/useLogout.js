@@ -1,5 +1,5 @@
 import axios from "../api/axios";
-import { useAuthContext } from "../context/AuthProvider";
+import { useAuthContext } from "../context/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
 
 const useLogout = () => {

@@ -1,10 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { useAuthContext } from "../../context/AuthProvider";
+import { useAuthContext } from "../../context/AuthContext";
+import { useCartContext } from "../../context/CartContext";
 
 function BaseHeader() {
   const { auth } = useAuthContext();
+  const { cartCount } = useCartContext();
 
   return (
     <div>
@@ -192,7 +194,7 @@ function BaseHeader() {
               </Link>
             )}
             <Link className="btn btn-success ms-2" to="/cart/">
-              Cart (3) <i className="fas fa-shopping-cart"> </i>
+              Cart {cartCount} <i className="fas fa-shopping-cart"> </i>
             </Link>
           </div>
         </div>
