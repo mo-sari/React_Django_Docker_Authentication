@@ -5,6 +5,7 @@ from rest_framework import generics, status, viewsets
 from rest_framework.decorators import api_view
 from django.db.models.functions import ExtractMonth
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from rest_framework.mixins import DestroyModelMixin
 
 from django.db import models
 
@@ -555,6 +556,18 @@ class QuestionAnswerListCreateAPIView(generics.ListCreateAPIView):
                         status=status.HTTP_201_CREATED)
 
 
+class QuestionAnswerDeleteAPIView(generics.DestroyAPIView):
+    serializer_class = api_serializer.Question_AnswerSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        qa_id = self.kwargs['qa_id']
+
+        user = User.objects.get(pk=user_id)
+        return api_models.Question_Answer.objects.get(pk=qa_id, user=user)
+
+
 class QuestionAnswerMessageSendAPIView(generics.CreateAPIView):
     serializer_class = api_serializer.Question_Answer_MessageSerializer
     permission_classes = [AllowAny]
@@ -579,6 +592,26 @@ class QuestionAnswerMessageSendAPIView(generics.CreateAPIView):
             question)
         return Response({"messgae": "Message Sent",
                          "question": question_serializer.data})
+
+
+class QuestionAnswerMessageUpdateDeleteAPIView(generics.UpdateAPIView,
+                                               DestroyModelMixin):
+
+    serializer_class = api_serializer.Question_Answer_MessageSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        qam_id = self.kwargs['qam_id']
+
+        user = User.objects.get(pk=user_id)
+        return api_models.Question_Answer_Message.objects.get(user=user,
+                                                              id=qam_id)
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TeacherSummaryAPIView(generics.ListAPIView):

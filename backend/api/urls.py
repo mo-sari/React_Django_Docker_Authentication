@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-# TODO  must adjust this url's better than this
 urlpatterns = [
     path('profiles/<user_id>/', views.ProfileAPIView.as_view()),
 
@@ -40,10 +39,17 @@ urlpatterns = [
          views.StudentWishListListCreateAPIView.as_view()),
     path("student/question-answer-list-create/<course_id>/",
          views.QuestionAnswerListCreateAPIView.as_view()),
+    path("student/question-answer-delete/<user_id>/<qa_id>/",
+         views.QuestionAnswerDeleteAPIView.as_view()),
     path("student/question-answer-message-create/",
          views.QuestionAnswerMessageSendAPIView.as_view()),
+    path("student/question-answer-message-update-delete/<user_id>/<qam_id>/",
+         views.QuestionAnswerMessageUpdateDeleteAPIView.as_view()),
     path("newStudent/reviews/<user_id>/<course_id>/",
          views.CourseReivewListAPIView.as_view()),
+
+
+
 
     # Teacher Routes
     path("teacher/summary/<teacher_id>/",

@@ -15,6 +15,7 @@ import Missing from "./components/Missing";
 import RequireAuth from "./components/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
 import { StudentCoruseDetail, StudentDashboard } from "./views/student";
+import { StudentCourseDetailProvider } from "./context/StudentCourseDetailContext";
 
 function App() {
   return (
@@ -51,7 +52,11 @@ function App() {
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route
               path="/student/courses/:enrollment_id"
-              element={<StudentCoruseDetail />}
+              element={
+                <StudentCourseDetailProvider>
+                  <StudentCoruseDetail />
+                </StudentCourseDetailProvider>
+              }
             />
           </Route>
 

@@ -66,14 +66,26 @@ class ReviewAdminHelper(admin.ModelAdmin):
         return obj.user.name
 
 
+class Question_Answer_Helper(admin.ModelAdmin):
+    list_display = ['get_user_name', 'get_course_name', 'id']
+
+    def get_course_name(self, obj):
+        return obj.course.title
+
+    def get_user_name(self, obj):
+        return obj.user.name
+
+
 admin.site.register(models.Category)
 admin.site.register(models.Course, CourseAdminHelper)
 admin.site.register(models.Variant, VariantAdminHelper)
 admin.site.register(models.VariantItem, VariantItemAdminHelper)
-admin.site.register(models.Question_Answer)
+admin.site.register(models.Question_Answer,
+                    Question_Answer_Helper)
 admin.site.register(models.Note)
 admin.site.register(models.Teacher)
-admin.site.register(models.Question_Answer_Message)
+admin.site.register(models.Question_Answer_Message,
+                    Question_Answer_Helper)
 admin.site.register(models.Cart, CartAdminHelper)
 admin.site.register(models.Certificate)
 admin.site.register(models.CompletedLesson)

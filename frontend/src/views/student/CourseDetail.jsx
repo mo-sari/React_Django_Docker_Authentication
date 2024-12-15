@@ -6,138 +6,44 @@ import Header from "./Partials/Header";
 
 import ReactPlayer from "react-player";
 import { FaPlay } from "react-icons/fa";
-import Toast from "../../utils/Toast";
 import { FaEdit } from "react-icons/fa";
 import { CgFolderRemove } from "react-icons/cg";
 import moment from "moment";
+import Toast from "../../utils/Toast";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useParams } from "react-router-dom";
+import { useStudentCourseDetailContext } from "../../context/StudentCourseDetailContext";
 import { axiosPrivate } from "../../api/axios";
 import { useAuthContext } from "../../context/AuthContext";
 
 function CourseDetail() {
-  const { enrollment_id } = useParams();
   const {
     auth: { user },
   } = useAuthContext();
+  const { enrollment_id } = useParams();
 
-  const [course, setCourse] = useState([]);
-  const [questions, setQuestions] = useState([]);
-  const [studentReview, setStudentReview] = useState([]);
-  const [completionPercent, setCompletionPercent] = useState(0);
-
-  const fetchStudentCourseDetail = async () => {
-    try {
-      const res = await axiosPrivate.get(
-        `api/student/course-detail/${user?.user_id}/${enrollment_id}/`
-      );
-      const data = res.data;
-      setCourse(data);
-      setQuestions(data.question_answer);
-      setStudentReview(data.review);
-      console.log(data);
-
-      const completedPercent =
-        data.completed_lesson.length * (100 / data.curriculum.length);
-      setCompletionPercent(Math.round(completedPercent));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const markAsCompleted = async (variantItemId) => {
-    const formData = new FormData();
-
-    formData.append("user_id", user?.user_id);
-    formData.append("course_id", course?.course.id);
-    formData.append("variant_item_id", variantItemId);
-    try {
-      const res = await axiosPrivate.post(
-        `api/student/course-completed/`,
-        formData
-      );
-      fetchStudentCourseDetail();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const submitReview = async (review) => {
-    const formDate = new FormData();
-    formDate.append("user_id", user?.user_id);
-    formDate.append("course_id", course?.course.id);
-    formDate.append("rating", review.rating);
-    formDate.append("review", review.review);
-
-    try {
-      const res = axiosPrivate.post(`api/student/rate-course/`, formDate);
-      Toast().fire({
-        icon: "success",
-        title: "Review created",
-      });
-      fetchStudentCourseDetail();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const removeReview = async (review) => {
-    try {
-      const res = await axiosPrivate.delete(
-        `api/student/review-detail/${user?.user_id}/${review.id}/`
-      );
-      Toast().fire({
-        icon: "success",
-        title: "Review deleted",
-      });
-      fetchStudentCourseDetail();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const editReview = async (review) => {
-    const formData = new FormData();
-    formData.append("review", review.review);
-    formData.append("rating", review.rating);
-
-    try {
-      const res = axiosPrivate.patch(
-        `api/student/review-detail/${user?.user_id}/${review.id}/`,
-        formData
-      );
-      Toast().fire({
-        icon: "success",
-        title: "Review edited",
-      });
-      fetchStudentCourseDetail();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {
+    fetchStudentCourseDetail,
+    markAsCompleted,
+    submitReview,
+    removeReview,
+    editReview,
+    course,
+    questions,
+    studentReview,
+    completionPercent,
+  } = useStudentCourseDetailContext();
 
   useEffect(() => {
-    fetchStudentCourseDetail();
+    fetchStudentCourseDetail(enrollment_id);
   }, [enrollment_id]);
+
+  console.log(questions);
 
   // =========================================================================
   // Discussion part
-  const [addNewQuestion, setAddNewQuestion] = useState(false);
-  const handleNewQuestionClose = () => setAddNewQuestion(false);
-  const handleNewQuestionOpen = () => setAddNewQuestion(true);
-
-  const [newQuestion, setNewQuestion] = useState({
-    title: "",
-    message: "",
-  });
-  const handleCreateQuestion = (e) => {
-    setNewQuestion({
-      ...newQuestion,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   // =========================================================================
   // video playing part
@@ -149,17 +55,113 @@ function CourseDetail() {
     setShow(true);
     setVariantItem(l);
   };
+  //   ============================================================
+  //   Question's part
 
-  // ==========================================================================
-  // conversation part
-  const [ConversationShow, setConversationShow] = useState(false);
-  const handleConversationClose = () => setConversationShow(false);
-  const handleConversationShow = () => {
-    setConversationShow(true);
+  const [replyingComment, setReplyingComment] = useState(null);
+
+  const [comment, setComment] = useState("");
+  const [newQuestion, setNewQuestion] = useState({
+    title: "",
+    message: "",
+  });
+
+  const handleCreateQuestion = (e) => {
+    setNewQuestion({
+      ...newQuestion,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const removeQuestionAnswer = async (e, id) => {
+    e.preventDefault();
+    try {
+      await axiosPrivate.delete(
+        `api/student/question-answer-delete/${user?.user_id}/${id}/`
+      );
+      Toast().fire({
+        icon: "success",
+        title: "Discussion Deleted",
+      });
+      fetchStudentCourseDetail(enrollment_id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeQuesetionAnswerMessage = async (e, id) => {
+    e.preventDefault();
+    try {
+      await axiosPrivate.delete(
+        `/api/student/question-answer-message-update-delete/${user?.user_id}/${id}/`
+      );
+      Toast().fire({
+        icon: "success",
+        title: "Comment Deleted",
+      });
+      fetchStudentCourseDetail(enrollment_id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createQuestionAnswer = async (e, course) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("course_id", course?.id);
+    formData.append("user_id", user?.user_id);
+    formData.append("title", newQuestion.title);
+    formData.append("message", newQuestion.message);
+    try {
+      await axiosPrivate.post(
+        `/api/student/question-answer-list-create/${course?.id}/`,
+        formData
+      );
+      Toast().fire({
+        icon: "success",
+        title: "Discussion Created",
+      });
+      fetchStudentCourseDetail(enrollment_id);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setNewQuestion({
+        title: "",
+        message: "",
+      });
+    }
+  };
+
+  const createQuesetionAnswerMessage = async (e, id) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("course_id", course?.id);
+    formData.append("qa_id", id);
+    formData.append("user_id", user?.user_id);
+    formData.append("message", comment);
+    try {
+      await axiosPrivate.post(
+        `api/student/question-answer-message-create/`,
+        formData
+      );
+      Toast().fire({
+        icon: "success",
+        title: "Comment Created",
+      });
+      fetchStudentCourseDetail(enrollment_id);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setComment("");
+      setReplyingComment(null);
+    }
   };
 
   // ==========================================================================
   // review part
+
   const [isReviewEditMode, setIsReviewEditMode] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [review, setReview] = useState({
@@ -200,7 +202,7 @@ function CourseDetail() {
   const handleCreateReview = (e) => {
     e.preventDefault();
 
-    submitReview(review);
+    submitReview(review, enrollment_id);
     reviewRoutine();
   };
 
@@ -208,7 +210,7 @@ function CourseDetail() {
     e.preventDefault();
     review.id = selectedReviewId;
 
-    editReview(review);
+    editReview(review, enrollment_id);
     reviewRoutine();
   };
 
@@ -223,11 +225,6 @@ function CourseDetail() {
             {/* Sidebar Here */}
             <Sidebar />
             <div className="col-lg-9 col-md-8 col-12">
-              {/* <section className="bg-blue py-7">
-                <div className="container">
-                  <ReactPlayer url='https://www.youtube.com/watch?v=LXb3EKWsInQ' width={"100%"} height={600} />
-                </div>
-              </section> */}
               <section className="mt-4">
                 <div className="container">
                   <div className="row">
@@ -412,6 +409,7 @@ function CourseDetail() {
                               </div>
                               {/* Accordion END */}
                             </div>
+                            {/* ==========START OF DISCUSSION======== */}
                             <div
                               className="tab-pane fade"
                               id="course-pills-3"
@@ -423,33 +421,40 @@ function CourseDetail() {
                                 <div className="card-header border-bottom p-0 pb-3">
                                   {/* Title */}
                                   <h4 className="mb-3 p-3">Discussion</h4>
-                                  <form className="row g-4 p-3">
+                                  <form
+                                    onSubmit={(e) =>
+                                      createQuestionAnswer(e, course)
+                                    }
+                                    className="row g-4 p-3"
+                                  >
                                     {/* Search */}
                                     <div className="col-sm-6 col-lg-9">
                                       <div className="position-relative">
                                         <input
                                           className="form-control pe-5 bg-transparent"
-                                          type="search"
-                                          placeholder="Search"
-                                          aria-label="Search"
+                                          type="text"
+                                          placeholder="Title"
+                                          name="title"
+                                          value={newQuestion.title}
+                                          onChange={(e) =>
+                                            handleCreateQuestion(e)
+                                          }
                                         />
-                                        <button
-                                          className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
-                                          type="submit"
-                                        >
-                                          <i className="fas fa-search fs-6 " />
-                                        </button>
+                                        <textarea
+                                          placeholder="Ask your question"
+                                          className="form-control pe-5 bg-transparent mt-2"
+                                          name="message"
+                                          value={newQuestion.message}
+                                          onChange={(e) =>
+                                            handleCreateQuestion(e)
+                                          }
+                                        />
                                       </div>
                                     </div>
                                     <div className="col-sm-6 col-lg-3">
-                                      <a
-                                        onChange={handleNewQuestionOpen}
-                                        className="btn btn-primary mb-0 w-100"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#questionModal"
-                                      >
+                                      <button className="btn btn-primary mb-0 w-100">
                                         Ask Question
-                                      </a>
+                                      </button>
                                     </div>
                                   </form>
                                 </div>
@@ -457,48 +462,207 @@ function CourseDetail() {
                                 <div className="card-body p-0 pt-3">
                                   <div className="vstack gap-3 p-3">
                                     {/* Question item START */}
-                                    <div className="shadow rounded-3 p-3">
-                                      <div className="d-sm-flex justify-content-sm-between mb-3">
-                                        <div className="d-flex align-items-center">
-                                          <div className="avatar avatar-sm flex-shrink-0">
-                                            <img
-                                              src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg"
-                                              className="avatar-img rounded-circle"
-                                              alt="avatar"
-                                              style={{
-                                                width: "60px",
-                                                height: "60px",
-                                                borderRadius: "50%",
-                                                objectFit: "cover",
-                                              }}
-                                            />
+                                    {/* ===================================== */}
+                                    {questions?.map((qa, index) => {
+                                      return (
+                                        <div
+                                          className="shadow rounded-3 p-3 mb-4"
+                                          key={index}
+                                        >
+                                          {/* Question Header */}
+                                          <div className="d-sm-flex justify-content-sm-between mb-3">
+                                            <div className="d-flex align-items-center">
+                                              <div className="avatar avatar-sm flex-shrink-0">
+                                                <img
+                                                  src={
+                                                    qa.messages[0].profile
+                                                      ?.image
+                                                  }
+                                                  className="avatar-img rounded-circle"
+                                                  alt="avatar"
+                                                  style={{
+                                                    width: "60px",
+                                                    height: "60px",
+                                                    borderRadius: "50%",
+                                                    objectFit: "cover",
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="ms-2">
+                                                <h6 className="mb-0">
+                                                  <a
+                                                    href="#"
+                                                    className="text-decoration-none text-dark"
+                                                  >
+                                                    {qa.messages[0].user?.name}
+                                                  </a>
+                                                </h6>
+                                                <small>
+                                                  {moment(
+                                                    qa.messages[0].date
+                                                  ).format("DD MMM, YYYY")}
+                                                </small>
+                                              </div>
+                                            </div>
+                                            {/* Edit and Delete Icons */}
+                                            {user?.user_id === qa.user && (
+                                              <div>
+                                                <button className="btn btn-sm ">
+                                                  <CgFolderRemove
+                                                    onClick={(e) =>
+                                                      removeQuestionAnswer(
+                                                        e,
+                                                        qa.id
+                                                      )
+                                                    }
+                                                    style={{
+                                                      width: "30px",
+                                                      height: "30px",
+                                                      color: "lightcoral",
+                                                    }}
+                                                  />
+                                                </button>
+                                              </div>
+                                            )}
                                           </div>
-                                          <div className="ms-2">
-                                            <h6 className="mb-0">
-                                              <a
-                                                href="#"
-                                                className="text-decoration-none text-dark"
-                                              >
-                                                Angelina Poi
-                                              </a>
-                                            </h6>
-                                            <small>Asked 10 Hours ago</small>
-                                          </div>
+
+                                          {/* Question Text */}
+                                          <h4>{qa.title}</h4>
+                                          <h5>{qa.messages[0].message}</h5>
+
+                                          {/* Join Conversation Button */}
+
+                                          {replyingComment &&
+                                          replyingComment.id === qa.id ? (
+                                            <form
+                                              onSubmit={(e) =>
+                                                createQuesetionAnswerMessage(
+                                                  e,
+                                                  qa.qa_id
+                                                )
+                                              }
+                                              className="row g-4 p-3"
+                                            >
+                                              {/* Search */}
+                                              <div className="col-sm-6 col-lg-9">
+                                                <div className="position-relative">
+                                                  <textarea
+                                                    placeholder="Ask your question"
+                                                    className="form-control pe-5 bg-transparent"
+                                                    name="comment"
+                                                    value={comment}
+                                                    onChange={(e) =>
+                                                      setComment(e.target.value)
+                                                    }
+                                                  />
+                                                </div>
+                                              </div>
+                                              <div className="col-sm-6 col-lg-3">
+                                                <button className="btn btn-primary mb-0 w-100">
+                                                  Add Response
+                                                </button>
+                                              </div>
+                                            </form>
+                                          ) : (
+                                            <button
+                                              onClick={() =>
+                                                setReplyingComment(qa)
+                                              }
+                                              className="btn btn-primary btn-sm mb-3 mt-3"
+                                            >
+                                              Join Conversation{" "}
+                                              <i className="fas fa-arrow-right"></i>
+                                            </button>
+                                          )}
+                                          {qa.messages
+                                            .slice(1)
+                                            .map((qam, index) => {
+                                              return (
+                                                <div
+                                                  className="ms-4"
+                                                  key={qam.id}
+                                                >
+                                                  {/* Single Answer */}
+                                                  <div className="shadow-sm p-3 rounded bg-light mb-3">
+                                                    {/* Answer Header */}
+                                                    <div className="d-flex align-items-center">
+                                                      <div className="avatar avatar-sm flex-shrink-0">
+                                                        <img
+                                                          src={
+                                                            qam?.profile?.image
+                                                          }
+                                                          className="avatar-img rounded-circle"
+                                                          alt="avatar"
+                                                          style={{
+                                                            width: "40px",
+                                                            height: "40px",
+                                                            borderRadius: "50%",
+                                                            objectFit: "cover",
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <div className="ms-2">
+                                                        <h6 className="mb-0">
+                                                          <a
+                                                            href="#"
+                                                            className="text-decoration-none text-dark"
+                                                          >
+                                                            {qam?.user?.name}
+                                                          </a>
+                                                        </h6>
+                                                        <small>
+                                                          {moment(
+                                                            qam?.date
+                                                          ).format(
+                                                            "DD MMM, YYYY"
+                                                          )}
+                                                        </small>
+                                                        {qam.user.id ===
+                                                          user?.user_id && (
+                                                          <button className="btn btn-sm ">
+                                                            <CgFolderRemove
+                                                              onClick={(e) =>
+                                                                removeQuesetionAnswerMessage(
+                                                                  e,
+                                                                  qam.id
+                                                                )
+                                                              }
+                                                              style={{
+                                                                width: "30px",
+                                                                height: "30px",
+                                                                color:
+                                                                  "lightcoral",
+                                                                position:
+                                                                  "absolute",
+                                                                right: "40",
+                                                                top: "470",
+                                                              }}
+                                                            />
+                                                          </button>
+                                                        )}
+                                                      </div>
+                                                    </div>
+
+                                                    {/* Answer Text */}
+                                                    <p className="mt-2">
+                                                      {qam?.message}
+                                                    </p>
+                                                  </div>
+
+                                                  {/* Add more answers here */}
+                                                </div>
+                                              );
+                                            })}
+                                          {/* Answers Section */}
                                         </div>
-                                      </div>
-                                      <h5>How can i fix this bug?</h5>
-                                      <button
-                                        className="btn btn-primary btn-sm mb-3 mt-3"
-                                        onClick={handleConversationShow}
-                                      >
-                                        Join Conversation{" "}
-                                        <i className="fas fa-arrow-right"></i>
-                                      </button>
-                                    </div>
+                                      );
+                                    })}
+                                    {/* ===================================== */}
                                   </div>
                                 </div>
                               </div>
                             </div>
+                            {/* ==========END OF DISCUSSION========== */}
                             <div
                               className="tab-pane fade"
                               id="course-pills-4"
@@ -561,15 +725,15 @@ function CourseDetail() {
                                         )}
                                       </div>
                                     </form>
-                                    {/* {studentReview.map((r) => {
-                                      return <h6>{r.review}</h6>;
-                                    })} */}
                                     {/* Start Of The Review */}
                                     <div className="container text-body">
                                       <div className="row d-flex justify-content-center">
                                         {studentReview.map((r) => {
                                           return (
-                                            <div className="d-flex flex-start mb-4">
+                                            <div
+                                              className="d-flex flex-start mb-4"
+                                              key={r.id}
+                                            >
                                               <img
                                                 className="rounded-circle shadow-1-strong me-3"
                                                 src={r?.profile?.image}
@@ -629,10 +793,13 @@ function CourseDetail() {
                                                             marginRight: "10px",
                                                             width: "30px",
                                                             height: "30px",
-                                                            color: "grey",
+                                                            color: "lightcoral",
                                                           }}
                                                           onClick={() =>
-                                                            removeReview(r)
+                                                            removeReview(
+                                                              r,
+                                                              enrollment_id
+                                                            )
                                                           }
                                                         />
 
@@ -640,7 +807,7 @@ function CourseDetail() {
                                                           style={{
                                                             width: "30px",
                                                             height: "30px",
-                                                            color: "grey",
+                                                            color: "lightgreen",
                                                           }}
                                                           onClick={() =>
                                                             reviewUpdate(r)
@@ -695,284 +862,6 @@ function CourseDetail() {
         </Modal.Footer>
       </Modal>
 
-      {/* Question Modal */}
-      <Modal
-        id="questionModal"
-        show={addNewQuestion}
-        size="lg"
-        onHide={handleNewQuestionClose}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Ask Question</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="mb-3">
-              <label htmlFor="exampleInputEmail1" className="form-label">
-                Question Title
-              </label>
-              <input
-                value={newQuestion.title}
-                name="title"
-                onChange={handleCreateQuestion}
-                type="text"
-                className="form-control"
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="exampleInputPassword1" className="form-label">
-                Question Message
-              </label>
-              <textarea
-                value={newQuestion.message}
-                name="message"
-                onChange={handleCreateQuestion}
-                className="form-control"
-                cols="30"
-                rows="10"
-              ></textarea>
-            </div>
-            <button
-              type="button"
-              className="btn btn-secondary me-2"
-              onClick={handleNewQuestionClose}
-            >
-              <i className="fas fa-arrow-left"></i> Close
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Send Message <i className="fas fa-check-circle"></i>
-            </button>
-          </form>
-        </Modal.Body>
-      </Modal>
-
-      {/* Conversation Edit Modal */}
-      <Modal show={ConversationShow} size="lg" onHide={handleConversationClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Lesson: 123</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="border p-2 p-sm-4 rounded-3">
-            <ul
-              className="list-unstyled mb-0"
-              style={{ overflowY: "scroll", height: "500px" }}
-            >
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img
-                        className="avatar-img rounded-circle"
-                        src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                        }}
-                        alt=""
-                      />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a
-                              href="#!"
-                              className="text-decoration-none text-dark"
-                            >
-                              {" "}
-                              Louis Ferguson{" "}
-                            </a>
-                            <br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>
-                              5hrs Ago
-                            </span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">
-                            Removed demands expense account
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img
-                        className="avatar-img rounded-circle"
-                        src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                        }}
-                        alt=""
-                      />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a
-                              href="#!"
-                              className="text-decoration-none text-dark"
-                            >
-                              {" "}
-                              Louis Ferguson{" "}
-                            </a>
-                            <br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>
-                              5hrs Ago
-                            </span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">
-                            Removed demands expense account from the debby
-                            building in a hall town tak with
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img
-                        className="avatar-img rounded-circle"
-                        src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                        }}
-                        alt=""
-                      />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a
-                              href="#!"
-                              className="text-decoration-none text-dark"
-                            >
-                              {" "}
-                              Louis Ferguson{" "}
-                            </a>
-                            <br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>
-                              5hrs Ago
-                            </span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">
-                            Removed demands expense account
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img
-                        className="avatar-img rounded-circle"
-                        src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                        }}
-                        alt=""
-                      />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a
-                              href="#!"
-                              className="text-decoration-none text-dark"
-                            >
-                              {" "}
-                              Louis Ferguson{" "}
-                            </a>
-                            <br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>
-                              5hrs Ago
-                            </span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">
-                            Removed demands expense account
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-
-            <form className="w-100 d-flex">
-              <textarea
-                name="message"
-                className="one form-control pe-4 bg-light w-75"
-                id="autoheighttextarea"
-                rows="2"
-                placeholder="What's your question?"
-              ></textarea>
-              <button className="btn btn-primary ms-2 mb-0 w-25" type="button">
-                Post <i className="fas fa-paper-plane"></i>
-              </button>
-            </form>
-
-            <form className="w-100">
-              <input
-                name="title"
-                type="text"
-                className="form-control mb-2"
-                placeholder="Question Title"
-              />
-              <textarea
-                name="message"
-                className="one form-control pe-4 mb-2 bg-light"
-                id="autoheighttextarea"
-                rows="5"
-                placeholder="What's your question?"
-              ></textarea>
-              <button className="btn btn-primary mb-0 w-25" type="button">
-                Post <i className="fas fa-paper-plane"></i>
-              </button>
-            </form>
-          </div>
-        </Modal.Body>
-      </Modal>
       <BaseFooter />
     </>
   );

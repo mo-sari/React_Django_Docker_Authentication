@@ -223,7 +223,7 @@ class Question_Answer(models.Model):
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.user.username} - {self.course.title}"
+        return f"{self.user.name} - {self.course.title}"
 
     class Meta:
         ordering = ['-date']
@@ -248,7 +248,7 @@ class Question_Answer_Message(models.Model):
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.user.username} - {self.course.title}"
+        return f"{self.user.name} - {self.course.title}"
 
     class Meta:
         ordering = ['date']

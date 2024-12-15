@@ -1,25 +1,270 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
+  "id": 4,
+  "messages": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "id": 1,
+      "profile": {
+        "id": 10,
+        "image": null,
+        "country": null,
+        "about": null,
+        "date": "2024-12-12T14:36:34.037757Z",
+        "user": 10
+      },
+      "message": "I cant install vscode, why?",
+      "qam_id": "498320",
+      "qa_id": "487669",
+      "date": "2024-12-14T20:22:17.711124Z",
+      "course": {
+        "id": 1,
+        "file": null,
+        "image": "http://localhost:8000/static/media/course-file/django1.jpg",
+        "title": "Django Basics",
+        "description": "Django start course",
+        "price": "25.00",
+        "language": "English",
+        "level": "Beginner",
+        "platform_status": "Published",
+        "teacher_course_status": "Published",
+        "featured": false,
+        "course_id": "620900",
+        "slug": "django-basics-1",
+        "date": "2024-12-10T20:46:32Z",
+        "category": {
+          "id": 1,
+          "title": "web development",
+          "image": null,
+          "active": true,
+          "slug": "web-development"
+        },
+        "teacher": {
+          "id": 1,
+          "image": null,
+          "full_name": "marziye ansari",
+          "bio": null,
+          "facebook": null,
+          "twitter": null,
+          "linkedin": null,
+          "about": "a web developer",
+          "country": "IRAN",
+          "user": {
+            "id": 8,
+            "password": "pbkdf2_sha256$870000$TblBrs3O55yFq6YJ4v136f$ibGnYTJHkBXAqzMhO/uDO+GOS5UuwKONhtNOhI4Fd+Y=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "marziyeansari3@gmail.com",
+            "name": "marziye",
+            "is_active": true,
+            "is_staff": false,
+            "groups": [],
+            "user_permissions": []
+          }
+        }
+      },
+      "question": {
+        "id": 4,
+        "title": "Vscode problem",
+        "qa_id": "379915",
+        "date": "2024-12-14T20:22:17.698532Z",
+        "course": {
+          "id": 1,
+          "file": null,
+          "image": "http://localhost:8000/static/media/course-file/django1.jpg",
+          "title": "Django Basics",
+          "description": "Django start course",
+          "price": "25.00",
+          "language": "English",
+          "level": "Beginner",
+          "platform_status": "Published",
+          "teacher_course_status": "Published",
+          "featured": false,
+          "course_id": "620900",
+          "slug": "django-basics-1",
+          "date": "2024-12-10T20:46:32Z",
+          "category": {
+            "id": 1,
+            "title": "web development",
+            "image": null,
+            "active": true,
+            "slug": "web-development"
+          },
+          "teacher": {
+            "id": 1,
+            "image": null,
+            "full_name": "marziye ansari",
+            "bio": null,
+            "facebook": null,
+            "twitter": null,
+            "linkedin": null,
+            "about": "a web developer",
+            "country": "IRAN",
+            "user": 8
+          }
+        },
+        "user": {
+          "id": 10,
+          "password": "pbkdf2_sha256$870000$TpsRIGys6cJ3W0pj3TC4qP$ZYR00de1/uCH9WDAS7jhOYwtNDjKg0S5YYF6EFKDa9g=",
+          "last_login": null,
+          "is_superuser": false,
+          "email": "mohsen.ansari.wtf@gmail.com",
+          "name": "mosari",
+          "is_active": true,
+          "is_staff": false,
+          "groups": [],
+          "user_permissions": []
+        }
+      },
+      "user": {
+        "id": 10,
+        "password": "pbkdf2_sha256$870000$TpsRIGys6cJ3W0pj3TC4qP$ZYR00de1/uCH9WDAS7jhOYwtNDjKg0S5YYF6EFKDa9g=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "mohsen.ansari.wtf@gmail.com",
+        "name": "mosari",
+        "is_active": true,
+        "is_staff": false,
+        "groups": [],
+        "user_permissions": []
+      }
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "id": 2,
+      "profile": {
+        "id": 9,
+        "image": null,
+        "country": null,
+        "about": null,
+        "date": "2024-12-10T18:04:02.067691Z",
+        "user": 9
+      },
+      "message": "download it from valid sources like Microsoft website itself, shouldn't be that hard, there are tons of videos for it as well",
+      "qam_id": "338512",
+      "qa_id": "702171",
+      "date": "2024-12-14T20:24:14Z",
+      "course": {
+        "id": 1,
+        "file": null,
+        "image": "http://localhost:8000/static/media/course-file/django1.jpg",
+        "title": "Django Basics",
+        "description": "Django start course",
+        "price": "25.00",
+        "language": "English",
+        "level": "Beginner",
+        "platform_status": "Published",
+        "teacher_course_status": "Published",
+        "featured": false,
+        "course_id": "620900",
+        "slug": "django-basics-1",
+        "date": "2024-12-10T20:46:32Z",
+        "category": {
+          "id": 1,
+          "title": "web development",
+          "image": null,
+          "active": true,
+          "slug": "web-development"
+        },
+        "teacher": {
+          "id": 1,
+          "image": null,
+          "full_name": "marziye ansari",
+          "bio": null,
+          "facebook": null,
+          "twitter": null,
+          "linkedin": null,
+          "about": "a web developer",
+          "country": "IRAN",
+          "user": {
+            "id": 8,
+            "password": "pbkdf2_sha256$870000$TblBrs3O55yFq6YJ4v136f$ibGnYTJHkBXAqzMhO/uDO+GOS5UuwKONhtNOhI4Fd+Y=",
+            "last_login": null,
+            "is_superuser": false,
+            "email": "marziyeansari3@gmail.com",
+            "name": "marziye",
+            "is_active": true,
+            "is_staff": false,
+            "groups": [],
+            "user_permissions": []
+          }
+        }
+      },
+      "question": {
+        "id": 4,
+        "title": "Vscode problem",
+        "qa_id": "379915",
+        "date": "2024-12-14T20:22:17.698532Z",
+        "course": {
+          "id": 1,
+          "file": null,
+          "image": "http://localhost:8000/static/media/course-file/django1.jpg",
+          "title": "Django Basics",
+          "description": "Django start course",
+          "price": "25.00",
+          "language": "English",
+          "level": "Beginner",
+          "platform_status": "Published",
+          "teacher_course_status": "Published",
+          "featured": false,
+          "course_id": "620900",
+          "slug": "django-basics-1",
+          "date": "2024-12-10T20:46:32Z",
+          "category": {
+            "id": 1,
+            "title": "web development",
+            "image": null,
+            "active": true,
+            "slug": "web-development"
+          },
+          "teacher": {
+            "id": 1,
+            "image": null,
+            "full_name": "marziye ansari",
+            "bio": null,
+            "facebook": null,
+            "twitter": null,
+            "linkedin": null,
+            "about": "a web developer",
+            "country": "IRAN",
+            "user": 8
+          }
+        },
+        "user": {
+          "id": 10,
+          "password": "pbkdf2_sha256$870000$TpsRIGys6cJ3W0pj3TC4qP$ZYR00de1/uCH9WDAS7jhOYwtNDjKg0S5YYF6EFKDa9g=",
+          "last_login": null,
+          "is_superuser": false,
+          "email": "mohsen.ansari.wtf@gmail.com",
+          "name": "mosari",
+          "is_active": true,
+          "is_staff": false,
+          "groups": [],
+          "user_permissions": []
+        }
+      },
+      "user": {
+        "id": 9,
+        "password": "pbkdf2_sha256$870000$dwQLYjhQv5jmWybvWXPsot$wf9Tf0Orq4J7QS+nNA1ekTXnKC/JNUfPNDfxwYK03hE=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "mohammad.ansari@gmail.com",
+        "name": "mohammad",
+        "is_active": true,
+        "is_staff": false,
+        "groups": [],
+        "user_permissions": []
+      }
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "profile": {
+    "id": 10,
+    "image": null,
+    "country": null,
+    "about": null,
+    "date": "2024-12-12T14:36:34.037757Z",
+    "user": 10
+  },
+  "title": "Vscode problem",
+  "qa_id": "379915",
+  "date": "2024-12-14T20:22:17.698532Z",
+  "course": 1,
+  "user": 10
 }
